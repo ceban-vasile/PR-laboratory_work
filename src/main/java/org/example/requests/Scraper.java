@@ -60,7 +60,6 @@ public class Scraper {
                 path = redirectUrl.getPath();
                 return fetchPageWithRedirect(host, port, path, redirectCount + 1);
             }
-
             return response.toString();
         }
     }
