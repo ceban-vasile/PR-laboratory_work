@@ -13,7 +13,7 @@ public class Processor {
         products.stream()
                 .map(product -> {
                     if (product.getCurrency().equals("£")) {
-                        product.setPrice(product.getPrice() * 20.03);
+                        product.setPrice(product.getPrice() * 23.11);
                         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
                         product.setCurrency("£/mdl");
                         product.setTime(String.valueOf(now));
