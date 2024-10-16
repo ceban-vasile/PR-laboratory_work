@@ -9,7 +9,15 @@ public class Product {
     String time;
     String link;
 
-    public Product(String name, String color, double price, String currency, String time, String link) {}
+    public Product(){}
+    public Product(String name, String color, Double price, String currency, String time, String link) {
+        this.name = name;
+        this.color = color;
+        this.price = price;
+        this.currency = currency;
+        this.time = time;
+        this.link = link;
+    }
 
     public Product(String name, Double price, String currency, String link) {
         this.name = name;
@@ -56,5 +64,17 @@ public class Product {
 
     public String getLink() {
         return link;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", price='" + price + '\'' +
+                ", currency='" + currency + '\'' +
+                ", time='" + time + '\'' +
+                ", link='" + link + '\'' +
+                '}';
     }
 }
