@@ -35,6 +35,11 @@ public class Main {
 
         processor.convertCurrency(products);
         List<Product> productRange = processor.filterByPriceRange(products, 200, 500);
+//        String testare = serialization.serialize(productRange);
+//        System.out.println(testare);
+//        List<Product> t = (List<Product>) serialization.deserialize(testare);
+//        System.out.println(t);
+//        System.out.println(serialization.serialize(t));
 
         double sum = processor.sumPrices(productRange);
 
@@ -51,7 +56,7 @@ public class Main {
     private void processProduct(Product product, ParsingHTML parsingHTML, Serialization serialization) throws IOException, URISyntaxException {
         parsingHTML.fetchProductDetails(product);
         if (parsingHTML.validateProduct(product)) {
-            System.out.println(serialization.serializeToJson(product));
+            //System.out.println(serialization.serialize(product));
         } else {
             System.err.println("Invalid product: " + product.getName());
         }
