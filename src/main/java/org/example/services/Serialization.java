@@ -1,10 +1,8 @@
 package org.example.services;
 import org.example.Model.Product;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,36 +42,58 @@ public class Serialization {
         }
     }
 
-    private String serializeProduct(Product product) {
-        StringBuilder sb = new StringBuilder("P:{");
-        if (product.getName() != null) {
-            sb.append("name:S:").append(product.getName()).append("| ");
+    public String serializeProduct(Product product) {
+        StringBuilder sb = new StringBuilder("\n   P:{");
+        Class<?> productClass = product.getClass();
+
+        Field[] fields = productClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            try {
+                Object value = field.get(product);
+
+                if (value != null) {
+                    String fieldName = field.getName();
+                    String fieldType = field.getType().getSimpleName();
+
+                    String serializedType = mapToSerializedType(fieldType);
+
+                    sb.append("\n").append("      ").append(fieldName).append(":").append(serializedType).append(":").append(value).append("| ");
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
-        if (product.getColor() != null) {
-            sb.append("color:S:").append(product.getColor()).append("| ");
-        }
-        if (product.getPrice() != null) {
-            sb.append("price:I:").append(product.getPrice()).append("| ");
-        }
-        if (product.getCurrency() != null) {
-            sb.append("currency:S:").append(product.getCurrency()).append("| ");
-        }
-        if (product.getTime() != null) {
-            sb.append("time:Time:").append(product.getTime()).append("| ");
-        }
-        if (product.getLink() != null) {
-            sb.append("link:S:").append(product.getLink()).append("| ");
-        }
-        sb.append("}");
+
+        sb.append("}\n");
         return sb.toString();
     }
 
-    public String serializeList(List<?> list) {
-        StringBuilder sb = new StringBuilder("L:");
-        for (Object item : list) {
-            sb.append(serialize(item));
+    private String mapToSerializedType(String javaType) {
+        switch (javaType) {
+            case "String":
+                return "S";
+            case "Integer":
+            case "int":
+                return "I";
+            case "Double":
+            case "double":
+                return "D";
+            case "LocalDateTime":
+                return "Time";
+            default:
+                return "Unknown";
         }
-        return sb.append("|").toString();
+    }
+
+    public String serializeList(List<?> list) {
+        StringBuilder sb = new StringBuilder("L:{");
+        for (Object item : list) {
+            sb.append(serializeProduct((Product) item));
+        }
+        return sb.append("}").toString();
     }
 
     private String serializeMap(Map<?, ?> map) {
@@ -82,7 +102,7 @@ public class Serialization {
             sb.append(serialize(entry.getKey()));
             sb.append(serialize(entry.getValue()));
         }
-        return sb.append("|").toString();
+        return sb.append("}").toString();
     }
 
     public Object deserialize(String data) {
@@ -100,7 +120,7 @@ public class Serialization {
     }
 
     private Product deserializeProduct(String data) {
-        String regex = "(?<key>name|price|currency|time|link):(?<type>S|I|Time):(?<value>[^|]+)";
+        String regex = "(?<key>name|price|currency|time|link|color):(?<type>S|D|I|Time):(?<value>[^|]+)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(data);
 
@@ -116,11 +136,10 @@ public class Serialization {
         String name = productData.getOrDefault("name", "Unknown");
         String color = productData.getOrDefault("color", "Unknown");
         double price = 0.0;
-
         try {
             price = Double.parseDouble(productData.getOrDefault("price", "0.0"));
         } catch (NumberFormatException e) {
-            System.err.println("Invalid price: " + productData.get("price"));
+            System.err.println("Invalid price format: " + productData.get("price"));
         }
 
         String currency = productData.getOrDefault("currency", "Unknown");
@@ -151,7 +170,6 @@ public class Serialization {
         }
         return products;
     }
-
 
     private Map<Object, Object> deserializeMap(String data) {
         Map<Object, Object> map = new HashMap<>();
