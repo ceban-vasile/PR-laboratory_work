@@ -35,11 +35,12 @@ public class Main {
 
         processor.convertCurrency(products);
         List<Product> productRange = processor.filterByPriceRange(products, 200, 500);
-//        String testare = serialization.serialize(productRange);
-//        System.out.println(testare);
-//        List<Product> t = (List<Product>) serialization.deserialize(testare);
-//        System.out.println(t);
-//        System.out.println(serialization.serialize(t));
+
+        String testare = serialization.serialize(productRange);
+        System.out.println("Serializarea:\n"+testare);
+        List<Product> t = (List<Product>) serialization.deserialize(testare);
+        System.out.println("\nDeserializarea:\n"+t);
+        System.out.println("\nSerializarea din nou:\n"+serialization.serialize(t));
 
         double sum = processor.sumPrices(productRange);
 
