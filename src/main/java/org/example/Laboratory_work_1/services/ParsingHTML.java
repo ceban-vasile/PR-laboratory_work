@@ -1,7 +1,7 @@
-package org.example.services;
+package org.example.Laboratory_work_1.services;
 
-import org.example.Model.Product;
-import org.example.requests.Scraper;
+import org.example.Laboratory_work_1.Model.Product;
+import org.example.Laboratory_work_1.requests.Scraper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

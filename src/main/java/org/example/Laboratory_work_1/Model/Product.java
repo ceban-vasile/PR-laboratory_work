@@ -1,4 +1,4 @@
-package org.example.Model;
+package org.example.Laboratory_work_1.Model;
 
 public class Product {
 
@@ -9,7 +9,8 @@ public class Product {
     String time;
     String link;
 
-    public Product(){}
+    public Product(){
+    }
     public Product(String name, String color, Double price, String currency, String time, String link) {
         this.name = name;
         this.color = color;

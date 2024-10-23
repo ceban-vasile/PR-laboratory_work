@@ -1,5 +1,5 @@
-package org.example.services;
-import org.example.Model.Product;
+package org.example.Laboratory_work_1.services;
+import org.example.Laboratory_work_1.Model.Product;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -43,7 +43,7 @@ public class Serialization {
     }
 
     public String serializeProduct(Product product) {
-        StringBuilder sb = new StringBuilder("\n   P:{");
+        StringBuilder sb = new StringBuilder("P:{");
         Class<?> productClass = product.getClass();
 
         Field[] fields = productClass.getDeclaredFields();
@@ -89,9 +89,9 @@ public class Serialization {
     }
 
     public String serializeList(List<?> list) {
-        StringBuilder sb = new StringBuilder("L:{");
+        StringBuilder sb = new StringBuilder("L:{\n");
         for (Object item : list) {
-            sb.append(serializeProduct((Product) item));
+            sb.append("   ").append(serializeProduct((Product) item));
         }
         return sb.append("}").toString();
     }

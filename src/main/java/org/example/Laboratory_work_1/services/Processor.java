@@ -1,6 +1,6 @@
-package org.example.services;
+package org.example.Laboratory_work_1.services;
 
-import org.example.Model.Product;
+import org.example.Laboratory_work_1.Model.Product;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
