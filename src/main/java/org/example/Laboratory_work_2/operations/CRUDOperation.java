@@ -1,14 +1,26 @@
 package org.example.Laboratory_work_2.operations;
 
 import org.example.Laboratory_work_1.Model.Product;
-import org.example.Laboratory_work_2.interface_connect_db.Connect_DB;
+import org.example.Laboratory_work_2.connect_db.Connect_DB;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CRUDOperation implements Connect_DB {
+
+    String name, color, currency, time_convert, link;
+    double price;
+
     public CRUDOperation(){}
+
+//    public CRUDOperation(String name, String color, double price, String currency, String time_covert, String link){
+//        this.name = name;
+//        this.color = color;
+//        this.price = price;
+//        this.currency = currency;
+//        this.time_convert = time_covert;
+//        this.link = link;
+//    }
 
     public void insertProductToDB(String name, String color, double price, String currency, String time, String link) throws SQLException {
 
