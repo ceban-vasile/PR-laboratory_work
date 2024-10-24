@@ -14,6 +14,7 @@ public class HTTPServer {
        server.createContext("/deleteProduct", new HTTPHandler());
        server.createContext("/updateProduct", new HTTPHandler());
        server.createContext("/displayProduct", new HTTPHandler());
+       server.createContext("/upload", new HTTPFileUploadHandler());
 
         server.setExecutor(null);
         server.start();
