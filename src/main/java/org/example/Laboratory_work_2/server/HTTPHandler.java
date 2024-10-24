@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HTTPHandler implements HttpHandler {
 
@@ -84,12 +86,17 @@ public class HTTPHandler implements HttpHandler {
             os.write(response.getBytes());
             os.close();
         }else if("GET".equals(exchange.getRequestMethod())){
+            String query = exchange.getRequestURI().getQuery();
+            Map<String, String> params = parseQueryParams(query);
 
-            String response;
+            int offset = Integer.parseInt(params.getOrDefault("offset", "1")); // Default to 0
+            int limit = Integer.parseInt(params.getOrDefault("limit", "5"));   // Default to 5
+
+            String response = "";
             try {
-                List<Product> products = new CRUDOperation().displayProductsToDB();
+                List<Product> products = new CRUDOperation().displayProductsToDB(offset, limit);
                 Gson gson = new Gson();
-                response = gson.toJson(products);
+                response = gson.toJson(products);  // Convert product list to JSON
             } catch (SQLException e) {
                 e.printStackTrace();
                 response = "Database error: " + e.getMessage();
@@ -103,6 +110,13 @@ public class HTTPHandler implements HttpHandler {
         else {
             exchange.sendResponseHeaders(405, -1);
         }
+    }
+
+    private Map<String, String> parseQueryParams(String query) {
+        return query == null ? Map.of() :
+                Arrays.stream(query.split("&"))
+                        .map(param -> param.split("="))
+                        .collect(Collectors.toMap(p -> p[0], p -> p[1]));
     }
 
 }
