@@ -73,30 +73,31 @@ public class CRUDOperation implements Connect_DB {
 
     }
 
-    public List<Product> displayProductsToDB() throws SQLException {
-
-        String sql = "SELECT * FROM products";
-
-        Connection connect = connect();
-        Statement statement = connect.createStatement();
+    public List<Product> displayProductsToDB(int offset, int limit) throws SQLException {
 
         List<Product> products = new ArrayList<>();
 
-        try (ResultSet resultSet = statement.executeQuery(sql)) {
+        String sql = "SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?";
+
+        try (Connection connect = connect();
+             PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, limit);
+            preparedStatement.setInt(2, offset);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
-                Product product = new Product(
+                products.add(new Product(
                         resultSet.getString("name"),
                         resultSet.getString("color"),
                         resultSet.getDouble("price"),
                         resultSet.getString("currency"),
                         resultSet.getString("time_convert"),
                         resultSet.getString("link")
-                );
-                products.add(product);
+                ));
             }
         }
-        statement.close();
-        connect.close();
 
         return products;
     }
