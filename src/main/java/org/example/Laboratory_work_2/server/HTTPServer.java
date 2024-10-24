@@ -10,8 +10,8 @@ public class HTTPServer {
     public void runServer() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
-       // server.createContext("/signup", new SignUpHandler());
-       // server.createContext("/login", new LogInHandler());
+       server.createContext("/addProduct", new HTTPHandler());
+       server.createContext("/deleteProduct", new HTTPHandler());
 
         server.setExecutor(null);
         server.start();
