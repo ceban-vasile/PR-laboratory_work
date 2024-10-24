@@ -9,9 +9,6 @@ import java.util.List;
 
 public class CRUDOperation implements Connect_DB {
 
-    String name, color, currency, time_convert, link;
-    double price;
-
     public CRUDOperation(){}
 
     public void insertProductToDB(String name, String color, double price, String currency, String time, String link) throws SQLException {
