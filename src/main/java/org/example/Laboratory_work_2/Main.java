@@ -1,11 +1,19 @@
 package org.example.Laboratory_work_2;
 
-import org.example.Laboratory_work_2.connect_db.DBconnect;
+import org.example.Laboratory_work_2.operations.CRUDOperation;
+import org.example.Laboratory_work_2.server.HTTPServer;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        DBconnect dBconnect = new DBconnect("jdbc:postgresql://localhost:5433/data_product", "postgres", "admin1234");
+        HTTPServer runServer = new HTTPServer();
+
+        try {
+            runServer.runServer();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
