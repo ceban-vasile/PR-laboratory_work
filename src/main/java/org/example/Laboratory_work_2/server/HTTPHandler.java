@@ -65,7 +65,7 @@ public class HTTPHandler implements HttpHandler {
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             os.close();
-        }else if("UPDATE".equals(exchange.getRequestMethod())){
+        }else if("PUT".equals(exchange.getRequestMethod())){
 
             byte[] body = exchange.getRequestBody().readAllBytes();
             String requestBody = new String(body, StandardCharsets.UTF_8);
@@ -89,8 +89,8 @@ public class HTTPHandler implements HttpHandler {
             String query = exchange.getRequestURI().getQuery();
             Map<String, String> params = parseQueryParams(query);
 
-            int offset = Integer.parseInt(params.getOrDefault("offset", "1")); // Default to 0
-            int limit = Integer.parseInt(params.getOrDefault("limit", "5"));   // Default to 5
+            int offset = Integer.parseInt(params.getOrDefault("offset", "0"));
+            int limit = Integer.parseInt(params.getOrDefault("limit", "5"));
 
             String response = "";
             try {

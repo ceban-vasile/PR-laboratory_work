@@ -13,10 +13,8 @@ public class CRUDOperation implements Connect_DB {
 
     public void insertProductToDB(String name, String color, double price, String currency, String time, String link) throws SQLException {
 
-        //Connect to database
         Connection connect = connect();
 
-        //create query to insert a product
         String sql = "INSERT INTO products(name, color, price, currency, time_convert, link) VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = connect.prepareStatement(sql);
