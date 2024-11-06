@@ -18,7 +18,6 @@ public class HTTPFileUploadHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
 
-            // Check if it's a multipart request
             Map<String, List<String>> headers = exchange.getRequestHeaders();
             String contentType = headers.getOrDefault("Content-type", List.of("")).get(0);
 
@@ -27,17 +26,14 @@ public class HTTPFileUploadHandler implements HttpHandler {
                 ServletFileUpload upload = new ServletFileUpload(factory);
 
                 try {
-                    // Ensure the directory exists
                     File uploadDir = new File(UPLOAD_DIR);
                     if (!uploadDir.exists()) {
                         uploadDir.mkdir();
                     }
 
-                    // Parse the request
                     InputStream requestBody = exchange.getRequestBody();
                     List<FileItem> items = upload.parseRequest(new InputStreamRequestContext(requestBody, contentType));
 
-                    // Process the uploaded items
                     for (FileItem item : items) {
                         if (!item.isFormField()) {
                             String fileName = new File(item.getName()).getName();
@@ -48,7 +44,6 @@ public class HTTPFileUploadHandler implements HttpHandler {
                         }
                     }
 
-                    // Send response
                     String response = "File uploaded successfully.";
                     exchange.sendResponseHeaders(200, response.length());
                     OutputStream os = exchange.getResponseBody();
@@ -79,7 +74,6 @@ public class HTTPFileUploadHandler implements HttpHandler {
         }
     }
 
-    // Helper class to adapt InputStream to ServletFileUpload's RequestContext
     private static class InputStreamRequestContext implements RequestContext {
         private final InputStream inputStream;
         private final String contentType;
@@ -101,7 +95,7 @@ public class HTTPFileUploadHandler implements HttpHandler {
 
         @Override
         public int getContentLength() {
-            return -1; // Content length can be determined from headers
+            return -1;
         }
 
         @Override
