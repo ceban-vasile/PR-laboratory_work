@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HTTPHandler implements HttpHandler {
@@ -28,15 +29,9 @@ public class HTTPHandler implements HttpHandler {
             String requestBody = new String(body, StandardCharsets.UTF_8);
 
             JSONObject json = new JSONObject(requestBody);
-            String name = json.getString("name");
-            String color = json.getString("color");
-            double price = json.getDouble("price");
-            String currency = json.getString("currency");
-            String time_converted = json.getString("time_converted");
-            String link = json.getString("link");
 
             try {
-                new CRUDOperation().insertProductToDB(name, color, price, currency, time_converted, link);
+                new CRUDOperation().insertProductToDB(json.getString("name"), json.getString("color"), json.getDouble("price"), json.getString("currency"), json.getString("time_converted"), json.getString("link"));
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -85,18 +80,19 @@ public class HTTPHandler implements HttpHandler {
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             os.close();
-        }else if("GET".equals(exchange.getRequestMethod())){
+        }else if ("GET".equals(exchange.getRequestMethod())) {
             String query = exchange.getRequestURI().getQuery();
-            Map<String, String> params = parseQueryParams(query);
+            query = query != null ? query.trim() : "";
+            Map<String, Integer> params = parseQueryParams(query);
 
-            int offset = Integer.parseInt(params.getOrDefault("offset", "0"));
-            int limit = Integer.parseInt(params.getOrDefault("limit", "5"));
+            int offset = params.getOrDefault("offset", 1);
+            int limit = params.getOrDefault("limit", 5);
 
             String response = "";
             try {
                 List<Product> products = new CRUDOperation().displayProductsToDB(offset, limit);
                 Gson gson = new Gson();
-                response = gson.toJson(products);  // Convert product list to JSON
+                response = gson.toJson(products);
             } catch (SQLException e) {
                 e.printStackTrace();
                 response = "Database error: " + e.getMessage();
@@ -112,11 +108,17 @@ public class HTTPHandler implements HttpHandler {
         }
     }
 
-    private Map<String, String> parseQueryParams(String query) {
-        return query == null ? Map.of() :
-                Arrays.stream(query.split("&"))
-                        .map(param -> param.split("="))
-                        .collect(Collectors.toMap(p -> p[0], p -> p[1]));
-    }
+    private Map<String, Integer> parseQueryParams(String query) {
+        if (query == null || query.isEmpty()) {
+            return Map.of();
+        }
+        return Arrays.stream(query.split("&"))
+                .map(param -> param.split("="))
+                .filter(parts -> parts.length == 2)
+                .collect(Collectors.toMap(
+                        p -> p[0],
+                        p -> Integer.parseInt(p[1])
 
+                ));
+    }
 }
