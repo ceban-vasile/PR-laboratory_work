@@ -69,31 +69,23 @@ public class CRUDOperation implements Connect_DB {
     }
 
     public List<Product> displayProductsToDB(int offset, int limit) throws SQLException {
-
         List<Product> products = new ArrayList<>();
 
-        String sql = "SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?";
-
-        try (Connection connect = connect();
-             PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-
-            preparedStatement.setInt(1, limit);
-            preparedStatement.setInt(2, offset);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
+        try (Connection connection = connect();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM products OFFSET ? LIMIT ?")) {
+            statement.setInt(1, offset);
+            statement.setInt(2, limit);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                products.add(new Product(
-                        resultSet.getString("name"),
-                        resultSet.getString("color"),
-                        resultSet.getDouble("price"),
-                        resultSet.getString("currency"),
-                        resultSet.getString("time_convert"),
-                        resultSet.getString("link")
-                ));
+                String name = resultSet.getString("name");
+                String color = resultSet.getString("color");
+                double price = resultSet.getDouble("price");
+                String currency = resultSet.getString("currency");
+                String timeConverted = resultSet.getString("time_convert");
+                String link = resultSet.getString("link");
+                products.add(new Product(name, color, price, currency, timeConverted, link));
             }
         }
-
         return products;
     }
 
