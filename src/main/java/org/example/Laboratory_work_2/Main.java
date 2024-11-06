@@ -1,19 +1,28 @@
 package org.example.Laboratory_work_2;
 
-import org.example.Laboratory_work_2.operations.CRUDOperation;
+import org.example.Laboratory_work_2.chat_room.ChatWebSocketServer;
 import org.example.Laboratory_work_2.server.HTTPServer;
 
 import java.io.IOException;
-import java.sql.SQLException;
+
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
-        HTTPServer runServer = new HTTPServer();
+    public static void main(String[] args) throws Exception {
 
-        try {
-            runServer.runServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        new Thread(() -> {
+            ChatWebSocketServer webSocketServer = new ChatWebSocketServer();
+            webSocketServer.start();
+        }).start();
+
+        // Run HTTP server in a separate thread
+        new Thread(() -> {
+            try {
+                HTTPServer httpServer = new HTTPServer();
+
+                httpServer.runServer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
