@@ -6,12 +6,9 @@ import org.example.Laboratory_work_1.services.ParsingHTML;
 import org.example.Laboratory_work_1.services.Processor;
 import org.example.Laboratory_work_1.services.Serialization;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 public class Main {
-
     public static void main(String[] args) {
         try {
             new Main().run();
@@ -30,46 +27,26 @@ public class Main {
         String pageContent = scraper.fetchPage(
                 "www.asos.com", 443, "/men/new-in/cat/?cid=27110&ctaref=searcherrorpage|men"
         );
+
         List<Product> products = parsingHTML.parseProducts(pageContent);
 
         processor.convertCurrency(products);
         List<Product> productRange = processor.filterByPriceRange(products, 200, 500);
+        String serializedData = serialization.serialize(productRange);
+        Product productJson = new Product();
+        productJson.setPrice(productRange.get(0).getPrice());
+        String message = "{\n" +
+                "    \"name\": \"" + productRange.getFirst().getName() + "\",\n" +
+                "    \"color\": \"" + (productRange.getFirst().getColor() != null ? productRange.getFirst().getColor() : "Black") + "\",\n" +
+                "    \"price\": " + Double.parseDouble(String.valueOf(productRange.getFirst().getPrice())) + ",\n" +
+                "    \"currency\": \"" + productRange.getFirst().getCurrency().split("/")[1] + "\",\n" +
+                "    \"time_converted\": \"" + productRange.getFirst().getTime().substring(0, 10).replace("-", "/") + "\",\n" +
+                "    \"link\": \"" + productRange.getFirst().getLink().split("/")[2] + "\"\n" +
+                "}";
+        scraper.publishToRabbitMQ(message);
 
-        String testare = serialization.serialize(productRange);
-
-        String test1 = serialization.serialize(new Product("Car", 400.0, "mdl", "www.asos.com"));
-
-        System.out.println("Serializarea Product:\n"+ test1);
-        System.out.println("Deserializarea Product:\n"+ serialization.deserialize(test1));
 
 
-        System.out.println("Serializarea List:\n"+testare);
-        List<Product> t = (List<Product>) serialization.deserialize(testare);
-        System.out.println("\nDeserializarea:\n");
-        for(Product p : t){
-            if(p.getName()!="Unknown") {
-                System.out.println(p);
-            }
-        }
-
-        double sum = processor.sumPrices(productRange);
-
-        productRange.forEach(product -> {
-            try {
-                processProduct(product, parsingHTML, serialization);
-            } catch (IOException | URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        System.out.println("Total sum: " + sum + " Lei");
-    }
-
-    private void processProduct(Product product, ParsingHTML parsingHTML, Serialization serialization) throws IOException, URISyntaxException {
-        parsingHTML.fetchProductDetails(product);
-        if (parsingHTML.validateProduct(product)) {
-            //System.out.println(serialization.serialize(product));
-        } else {
-            System.err.println("Invalid product: " + product.getName());
-        }
+        System.out.println(" [x] Serialized and published products to RabbitMQ");
     }
 }
