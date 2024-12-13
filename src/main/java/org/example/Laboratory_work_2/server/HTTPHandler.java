@@ -3,7 +3,7 @@ package org.example.Laboratory_work_2.server;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.example.Laboratory_work_1.Model.Product;
+import org.example.Laboratory_work_2.Product;
 import org.example.Laboratory_work_2.operations.CRUDOperation;
 import org.json.JSONObject;
 

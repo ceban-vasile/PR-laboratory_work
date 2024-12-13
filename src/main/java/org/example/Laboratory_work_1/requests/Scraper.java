@@ -1,5 +1,10 @@
 package org.example.Laboratory_work_1.requests;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import org.example.Laboratory_work_1.Model.Product;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
@@ -10,6 +15,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class Scraper {
+
+    private final static String QUEUE_NAME = "product_queue";
 
     public Scraper(){}
 
@@ -71,5 +78,27 @@ public class Scraper {
             }
         }
         return null;
+    }
+
+    public void publishToRabbitMQ(String product) {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+
+            // Declare a queue
+            channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+
+            // Publish message
+            channel.basicPublish("", QUEUE_NAME, null, product.getBytes());
+            System.out.println(" [x] Sent: " + product);
+
+        } catch (Exception e) {
+            System.err.println("Failed to publish message to RabbitMQ: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

@@ -1,6 +1,6 @@
 package org.example.Laboratory_work_2.operations;
 
-import org.example.Laboratory_work_1.Model.Product;
+import org.example.Laboratory_work_2.Product;
 import org.example.Laboratory_work_2.connect_db.Connect_DB;
 
 import java.sql.*;
@@ -77,13 +77,14 @@ public class CRUDOperation implements Connect_DB {
             statement.setInt(2, limit);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 String color = resultSet.getString("color");
                 double price = resultSet.getDouble("price");
                 String currency = resultSet.getString("currency");
                 String timeConverted = resultSet.getString("time_convert");
                 String link = resultSet.getString("link");
-                products.add(new Product(name, color, price, currency, timeConverted, link));
+                products.add(new Product(id, name, color, price, currency, timeConverted, link));
             }
         }
         return products;
