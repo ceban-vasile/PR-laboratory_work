@@ -1,5 +1,6 @@
 package org.example.Laboratory_work_2;
 
+import org.example.Laboratory_work_2.RabbitMQ.RabbitMQConsumer;
 import org.example.Laboratory_work_2.chat_room.ChatWebSocketServer;
 import org.example.Laboratory_work_2.server.HTTPServer;
 
@@ -14,12 +15,11 @@ public class Main {
             webSocketServer.start();
         }).start();
 
-        // Run HTTP server in a separate thread
         new Thread(() -> {
             try {
                 HTTPServer httpServer = new HTTPServer();
-
                 httpServer.runServer();
+                new RabbitMQConsumer().startConsumer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
